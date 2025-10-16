@@ -1,5 +1,5 @@
-## Assumptions for the drift mechanism and stochastic model.
-From the options: thermal, aging, calibration decay, we should choose to model aging / calibration-decay as the primary drift mechanism. More specifically:
+## Drift Mechanism Choice: 
+From the options: thermal, aging, calibration-decay, we should choose to model aging / calibration-decay as the primary drift mechanism. More specifically:
  - We assume a slowly increasing bias over time due to aging of the sensor’s components (e.g. electronics, sensor elements) or gradual degradation of calibration (i.e. calibration coefficients slowly drifting).
  - We will also assume that thermal fluctuations are not large enough (or are well compensated elsewhere) so that thermal drift is not explicitly modeled. Essentially, we treat temperature as fixed or negligible with respect to drift mechanisms.
 
