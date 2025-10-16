@@ -75,6 +75,49 @@ Here are the assumptions we will use, given we focus on aging/calibration drift:
 
 * For many sensor drift circumstances (especially early in use), the behavior of bias seems consistent with random walk (slow drift, increasing variance, no immediate corrections).
 
+---
+## Parameters for modelling drift component only: 
+
+| Parameter                            | Symbol               | Value                          | Description / Reasoning                                           |
+| ------------------------------------ | -------------------- | ------------------------------ | ----------------------------------------------------------------- |
+| Number of time steps                 | $( N_{\text{drift}} )$ | 2000                           | Enough steps to observe drift accumulation                        |
+| Sampling interval                    | $( T )$                | 1 (unit time)                  | Use a normalized time step (e.g. 1 second, or whatever time unit) |
+| Drift increment standard deviation   | $( \sigma_d )$         | 0.0005                         | Small increment so drift builds gradually                         |
+| Initial drift                        | $( d_0 )$              | 0                              | Start from zero bias                                              |
+| (Optional) Seed for random generator | —                    | a fixed integer (e.g. 0, 1234) | To make results reproducible                                      |
+
+
+
+---
+Yes — that’s a good idea: we can separate the **parameter sets** into two groups:
+
+1. **Drift component only** (i.e. parameters relevant just for modeling drift)
+2. **Full system** (which includes drift + measurement noise + true signal)
+
+Below is a recommended split, with values and justification, for each. You can use these when building your Simulink model or MATLAB code.
+
+---
+
+## 1. Parameter Set for the **Drift Component Only**
+
+When focusing strictly on the drift model $(i.e. ( d_{k+1} = d_k + w_k ))$, these are the relevant parameters:
+
+
+| Parameter                            | Symbol               | Value                          | Description / Reasoning                                           |
+| ------------------------------------ | -------------------- | ------------------------------ | ----------------------------------------------------------------- |
+| Number of time steps                 | $(N_{\text{drift}})$ | 2000                           | Enough steps to observe drift accumulation                        |
+| Sampling interval                    | (T)                | 1 (unit time)                  | Use a normalized time step (e.g. 1 second, or whatever time unit) |
+| Drift increment standard deviation   | $(\sigma_d)$         | 0.0005                         | Small increment so drift builds gradually                         |
+| Initial drift                        | $(d_0)$              | 0                              | Start from zero bias                                              |
+| (Optional) Seed for random generator | —                    | a fixed integer (e.g. 0, 1234) | To make results reproducible                                      |
+
+So when we simulate **drift only**, we implement:
+
+$d_{k+1} = d_k + w_k,\quad w_k \sim \mathcal{N}(0, \sigma_d^2)$
+
+with $( d_0 = 0 )$, $( \sigma_d = 0.0005 )$, over 2000 steps, with step interval ( T = 1 ).
+
+
 [1]: https://www.mdpi.com/1424-8220/22/14/5225?utm_source=chatgpt.com "Research on Random Drift Model Identification and Error Compensation Method of MEMS Sensor Based on EEMD-GRNN"
 [2]: https://daischsensor.com/understanding-how-random-walk-in-imu-sensors/?utm_source=chatgpt.com "Understanding How Random Walk in IMU sensors | IMU Noise"
 [3]: https://arxiv.org/abs/2202.09360?utm_source=chatgpt.com "Analytic Method for Estimating Aircraft Fix Displacement from Gyroscope's Allan-Deviation Parameters"
