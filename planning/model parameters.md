@@ -74,3 +74,8 @@ Here are the assumptions we will use, given we focus on aging/calibration drift:
 * It sets a baseline model: once you have that working, you can compare its performance to more complex models (AR(1), Gaussian process, etc.)
 
 * For many sensor drift circumstances (especially early in use), the behavior of bias seems consistent with random walk (slow drift, increasing variance, no immediate corrections).
+
+[1]: https://www.mdpi.com/1424-8220/22/14/5225?utm_source=chatgpt.com "Research on Random Drift Model Identification and Error Compensation Method of MEMS Sensor Based on EEMD-GRNN"
+[2]: https://daischsensor.com/understanding-how-random-walk-in-imu-sensors/?utm_source=chatgpt.com "Understanding How Random Walk in IMU sensors | IMU Noise"
+[3]: https://arxiv.org/abs/2202.09360?utm_source=chatgpt.com "Analytic Method for Estimating Aircraft Fix Displacement from Gyroscope's Allan-Deviation Parameters"
+
