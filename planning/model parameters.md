@@ -128,6 +128,40 @@ This setup ensures that drift accumulates slowly while measurement noise dominat
 
 ---
 
+### Kalman Filter Design
+
+#### State Definition  
+We defined the augmented state vector  
+$\mathbf{s}_k = \begin{pmatrix} x_k \\ d_k \end{pmatrix}$
+
+#### State Transition & Observation Models  
+- **State transition**:  
+  $\mathbf{s}_{k+1} = F \, \mathbf{s}_k + \mathbf{w}_k,\quad F = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}$  
+  with process noise covariance  
+  $$Q = \begin{bmatrix} \sigma_x^2 & 0 \\ 0 & \sigma_d^2 \end{bmatrix},\quad \sigma_x = 0$$
+
+- **Measurement model**:  
+  $y_k = H \,\mathbf{s}_k + v_k,\quad H = [1\;\;1],\quad R = \sigma_v^2$
+
+- **Cross covariance (N)** was assumed zero (process noise and measurement noise independent).
+
+- **Initial conditions**:  
+  $\hat{\mathbf{s}}_{0} = \begin{pmatrix} 0 \\ 0 \end{pmatrix},\quad P_{0} = I \cdot 1$
+
+#### Filter Recursion  
+For each time step $k = 2, 3, \dots, N$:
+
+1. **Prediction**  
+   $\hat{\mathbf{s}}_{k|k-1} = F \, \hat{\mathbf{s}}_{k-1|k-1}, \quad P_{k|k-1} = F\,P_{k-1}F^\top + Q$
+
+3. **Update / Correction**  
+   - Innovation: $\nu_k = y_k - H \,\hat{\mathbf{s}}_{k|k-1}$  
+   - Innovation covariance: $S_k = H\,P_{k|k-1}H^\top + R$  
+   - Kalman gain: $K_k = P_{k|k-1}H^\top S_k^{-1}$  
+   - State update: $\hat{\mathbf{s}}_{k|k} = \hat{\mathbf{s}}_{k|k-1} + K_k \, \nu_k$  
+   - Covariance update: $P_{k|k} = (I - K_k H)\,P_{k|k-1}$
+
+This classic “predict + correct” structure follows standard Kalman filter theory.
 
 ---
 
