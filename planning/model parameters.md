@@ -81,10 +81,9 @@ Here are the assumptions we will use, given we focus on aging/calibration drift:
 | Parameter                            | Symbol               | Value                          | Description / Reasoning                                           |
 | ------------------------------------ | -------------------- | ------------------------------ | ----------------------------------------------------------------- |
 | Number of time steps                 | $( N_{\text{drift}} )$ | 2000                           | Enough steps to observe drift accumulation                        |
-| Sampling interval                    | $( T )$                | 1 (unit time)                  | Use a normalized time step (e.g. 1 second, or whatever time unit) |
+| Sampling interval                    | $( T )$                | 1 (unit time)                  |  A normalized time step (e.g. 1 second, 1 minute or 1 day or whatever time unit) |
 | Drift increment standard deviation   | $( \sigma_d )$         | 0.0005                         | Small increment so drift builds gradually                         |
 | Initial drift                        | $( d_0 )$              | 0                              | Start from zero bias                                              |
-| (Optional) Seed for random generator | —                    | a fixed integer (e.g. 0, 1234) | To make results reproducible                                      |
 
                      
 
@@ -94,6 +93,77 @@ $d_{k+1} = d_k + w_k,\quad w_k \sim \mathcal{N}(0, \sigma_d^2)$
 
 with $( d_0 = 0 )$, $( \sigma_d = 0.0005 )$, over 2000 steps, with step interval ( T = 1 ).
 
+---
+### Simulink Model of the drift only component:
+
+<img width="902" height="459" alt="image" src="https://github.com/user-attachments/assets/8a2bad5c-9cce-4b09-b71e-cdef7a84bf89" />
+
+---
+### 2. Simulation and drift compensation implementation using Kalman filter 
+
+- After formulating the stochastic drift model (random walk), we simulated synthetic sensor data combining **true signal + drift + measurement noise**.  
+- We then implemented a **standard linear Kalman filter** to estimate drift ($\hat{d}_k$) and true signal ($\hat{x}_k$), and thereby compensate the drift by subtracting $\hat{d}_k$ from the measurements.  
+- The simulation + estimation pipeline allows us to evaluate filter performance (error metrics, time series plots, residual analysis).
+
+---
+### Block Diagram:
+
+<img width="1174" height="469" alt="image" src="https://github.com/user-attachments/assets/dfd6d02f-277d-4b5a-baee-cdf79bb9bf51" />
+
+---
+
+### Simulation Setup
+
+- **Time horizon**: $N = 2000$ samples  
+- **Sampling interval**: $T = 1$ (normalized time unit)  
+- **Drift process**:  
+  $d_{k+1} = d_k + w_k,\quad w_k \sim \mathcal{N}(0, \sigma_d^2),\quad \sigma_d = 0.0005$  
+  initialized $d_0 = 0$  
+- **Measurement generation**:  
+  $y_k = x_k + d_k + v_k,\quad v_k \sim \mathcal{N}(0, \sigma_v^2),\quad \sigma_v = 0.01$  
+  where the true signal $x_k$ was chosen as constant zero (for simplicity)  
+- **Random seed** fixed for reproducibility  
+
+This setup ensures that drift accumulates slowly while measurement noise dominates short-term variations, making the filter’s task nontrivial but feasible.
+
+---
+
+
+---
+
+### Implementation in MATLAB  
+
+- The simulation and filter were implemented in a single MATLAB script.  
+- Arrays were preallocated for performance (e.g. `d_true`, `y`, `s_hat`, `P_store`).  
+- The loop iterates from sample 2 to $N$, performing prediction and update.  
+- After filtering, we extracted $\hat{d}_k$ (from `s_hat(2,k)`) and $\hat{x}_k$ (from `s_hat(1,k)`).  
+- We plotted:
+  - True drift vs estimated drift  
+  - Measured signal vs corrected signal (i.e. $y_k - \hat{d}_k$)  
+  - Estimated true signal vs actual (zero baseline)  
+- We also computed **RMSE** and **MAE** for drift estimation error and signal estimation error.
+
+---
+
+### Key Observations & Practical Points
+
+- **Negative or positive drift**: Because increments $w_k$ are zero-mean, the drift trajectory may wander negative or positive—this is natural and expected.  
+- **Residual & innovation**: Checking the statistics (mean, whiteness) of the innovation $\nu_k$ can validate whether the filter assumptions hold (i.e. residual should be approximately zero-mean and white).  
+- **Tuning $Q$ and $R$**: The performance (how fast the filter tracks drift vs noise) depends critically on correct choice of $Q$ and $R$. Overstating $Q$ causes the filter to follow noise; understating $Q$ causes lag in tracking drift.  
+- **Covariance evolution**: The error covariance $P$ generally converges or stabilizes over time if noise assumptions are consistent.  
+- **Limitations**: In real sensors, drift may not follow pure random walk, noise may not be Gaussian, or drift increments may vary over time. In those cases, EKF/UKF or adaptive filtering may outperform the simple Kalman filter.
+
+---
+
+### Suggestions for Report Integration
+
+- Include a **block diagram** showing data flow: drift generator → measurement → Kalman filter → estimated drift & corrected signal.  
+- In the report, convert these notes into structured subsections (Simulation Setup, Filter Design, Implementation, Results & Metrics, Discussion).  
+- Present key plots (true vs estimate, error curves) along with error tables.  
+- Include discussion of tuning decisions (why put $\sigma_d = 0.0005$, $\sigma_v = 0.01$, initial $P$) and sensitivity tests.  
+- Discuss potential mismatches (model vs reality) and how you might extend to EKF/UKF or adaptive filtering.
+
+---
 
 [1]: https://www.mdpi.com/1424-8220/22/14/5225?utm_source=chatgpt.com "Research on Random Drift Model Identification and Error Compensation Method of MEMS Sensor Based on EEMD-GRNN"
 [2]: https://daischsensor.com/understanding-how-random-walk-in-imu-sensors/?utm_source=chatgpt.com "Understanding How Random Walk in IMU sensors | IMU Noise"
