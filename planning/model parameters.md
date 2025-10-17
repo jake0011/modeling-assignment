@@ -86,30 +86,7 @@ Here are the assumptions we will use, given we focus on aging/calibration drift:
 | Initial drift                        | $( d_0 )$              | 0                              | Start from zero bias                                              |
 | (Optional) Seed for random generator | —                    | a fixed integer (e.g. 0, 1234) | To make results reproducible                                      |
 
-
-
----
-Yes — that’s a good idea: we can separate the **parameter sets** into two groups:
-
-1. **Drift component only** (i.e. parameters relevant just for modeling drift)
-2. **Full system** (which includes drift + measurement noise + true signal)
-
-Below is a recommended split, with values and justification, for each. You can use these when building your Simulink model or MATLAB code.
-
----
-
-## 1. Parameter Set for the **Drift Component Only**
-
-When focusing strictly on the drift model $(i.e. ( d_{k+1} = d_k + w_k ))$, these are the relevant parameters:
-
-
-| Parameter                            | Symbol               | Value                          | Description / Reasoning                                           |
-| ------------------------------------ | -------------------- | ------------------------------ | ----------------------------------------------------------------- |
-| Number of time steps                 | $(N_{\text{drift}})$ | 2000                           | Enough steps to observe drift accumulation                        |
-| Sampling interval                    | (T)                | 1 (unit time)                  | Use a normalized time step (e.g. 1 second, or whatever time unit) |
-| Drift increment standard deviation   | $(\sigma_d)$         | 0.0005                         | Small increment so drift builds gradually                         |
-| Initial drift                        | $(d_0)$              | 0                              | Start from zero bias                                              |
-| (Optional) Seed for random generator | —                    | a fixed integer (e.g. 0, 1234) | To make results reproducible                                      |
+                     
 
 So when we simulate **drift only**, we implement:
 
