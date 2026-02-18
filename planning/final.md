@@ -1,6 +1,4 @@
-Below is a **draft of a “Results & Discussion”** section (written in report style) based on the work you’ve done so far, followed by **commentary notes** for defence for each section. You’ll want to adapt numbers / plots to your actual outputs, but this gives structure and sample insights.
 
----
 
 ## Results & Discussion
 
