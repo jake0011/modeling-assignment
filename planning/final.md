@@ -85,26 +85,3 @@ In this section we present the outcomes of our drift compensation experiments (u
 
 Overall, the Kalman filter compensation shows substantial improvement in reducing drift error, aligning estimated drift with true drift, and lowering signal error metrics. While there are limitations and startup effects, the approach works well under the simulated assumptions. This lays groundwork for applying similar methods under more realistic settings (sensor data, varying signals, non-ideal noise).
 
----
-
-## Defence Commentary Notes
-
-Below are points you might raise in defence, section by section, illustrating understanding or answering likely questions.
-
-| Section                        | Possible Defence Commentary                                                                                                                                                                                                                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Simulation Outputs             | “We chose ( \sigma_d = 0.0005 ) and ( \sigma_v = 0.01 ) to make drift small relative to noise early, ensuring the filter has to work—not trivial results. We saw drift dominate only after many steps, matching expected physical behavior of slow bias.” |
-| Compensation via Kalman Filter | “Initial lag is expected: the filter needs data to build up its state covariance. We could reduce this lag by nonzero ( \sigma_x ), or by giving some observation of ( x ), or using more informative measurements.”                                      |
-| Error Metric Comparisons       | “Large error reduction in RMSE shows that extreme deviations are better corrected; the fact that MAE reduces less suggests residual noise rather than bias is dominant after compensation which is acceptable.”                                           |
-| Visualization Insights         | “Histograms centred around zero indicate no bias; symmetry suggests our assumption of zero‐mean noise was okay. Scatter plots show approximate proportionality of ( \hat d ) to true ( d ).”                                                              |
-| Strengths & Limitations        | “We must emphasize that the method is robust under ideal assumptions; real data may present nonstationary drift, non-Gaussian noise, missing data, etc. These are topics for future work.”                                                                |
-| Comparison with Literature     | “Our work doesn’t yet include temperature dependence or adaptive parameters, but literature shows those improve results in physical experiments—something to consider extending.”                                                                         |
-| Implications & Recommendations | “When we implement this method on real sensors, we will need to tune covariances ( Q, R ), maybe adapt them online; possibly combine with ARIMA or machine learning methods for better adaptability.”                                                     |
-
----
-
-If you like, I can fill in this Results & Discussion section with your actual numbers and graphs so your defence has concrete slides.
-
-[1]: https://www.ijert.org/estimation-of-sensor-temperature-drift-using-kalman-filter?utm_source=chatgpt.com "Estimation of Sensor Temperature Drift using Kalman Filter – IJERT"
-[2]: https://www.mdpi.com/1424-8220/15/5/11222?utm_source=chatgpt.com "An Adaptive Compensation Algorithm for Temperature Drift of Micro-Electro-Mechanical Systems Gyroscopes Using a Strong Tracking Kalman Filter"
-[3]: https://www.mdpi.com/1424-8220/16/2/235?utm_source=chatgpt.com "Inertial Sensor Error Reduction through Calibration and Sensor Fusion"
